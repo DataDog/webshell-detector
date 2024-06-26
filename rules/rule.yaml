@@ -1,0 +1,13 @@
+rules:
+  - id: detect-file-download
+    languages:
+      - php
+    message: test
+    metadata:
+      description: test
+    patterns:
+      - pattern: curl_setopt( ..., $FILE) # need to expand to other types of file downloads
+      - metavariable-regex:
+          metavariable: $FILE
+          regex: (.*file:file:.*) 
+    severity: WARNING
