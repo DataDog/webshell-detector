@@ -1,5 +1,5 @@
 rules:
-  - id: test
+  - id: detect-file-download
     languages:
       - php
     message: test
