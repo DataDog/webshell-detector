@@ -1,0 +1,20 @@
+rules:
+  - id: obfuscation-additional
+    languages:
+      - php
+    message: This file is running eval indirectly
+    metadata:
+      description: Identify when eval is run indirectly
+    patterns:
+      - pattern-either:
+          - patterns:
+              - pattern: preg_replace($E, ..., ...)
+              - metavariable-regex:
+                  metavariable: $E
+                  regex: .*/e.*
+          - patterns:
+              - pattern: echo $ARG;
+              - metavariable-regex:
+                  metavariable: $ARG
+                  regex: .*{[$]{.*}}.*
+    severity: WARNING

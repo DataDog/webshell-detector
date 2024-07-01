@@ -1,0 +1,29 @@
+rules:
+  - id: obfuscation
+    languages:
+      - php
+    message: This file is running code that has been obfuscated
+    metadata:
+      description: Identify when obfuscated code is passed into an eval function
+    mode: taint
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: $FUNC(...)
+              - pattern: $VAR = create_function(..., $FUNC)
+              - pattern: |
+                  $VAR = function(...) {
+                    ...
+                    $FUNC;
+                    ...
+                  }
+          - metavariable-regex:
+              metavariable: $FUNC
+              regex: .*(base64_decode|base64_encode|gzuncompress|gzinflate|str_rot13|strrev|openssl_decrypt).*
+    pattern-sinks:
+      - patterns:
+          - pattern: $FUNC(...)
+          - metavariable-regex:
+              metavariable: $FUNC
+              regex: .*(eval|assert).*
+    severity: WARNING

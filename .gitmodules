@@ -1,0 +1,3 @@
+[submodule "code/false examples/WordPress"]
+	path = code/false examples/WordPress
+	url = https://github.com/WordPress/WordPress.git

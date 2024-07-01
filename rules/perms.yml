@@ -1,0 +1,13 @@
+rules:
+  - id: perms
+    languages:
+      - php
+    message: This file is extracting information on file permissions
+    metadata:
+      description: Identify when attackers are extracting permission information
+    patterns:
+      - pattern: ($PERMS & $HEX) == $HEX
+      - metavariable-regex:
+          metavariable: $HEX
+          regex: (0xC000|0xA000|0x8000|0x6000|0x4000|0x2000|0x1000)
+    severity: WARNING
