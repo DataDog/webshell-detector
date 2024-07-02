@@ -29,24 +29,24 @@ def run_semgrep(target_dir, rules_file, options):
     myTable.add_column(columns[0], ['Number of files detected', 'Detection rate'])
 
     if options[0] == 0 or options[0] == 1:
-        true_files_detected = {path for path in files if path.startswith('code/true examples - malicious/')}
-        true_total = len(os.listdir('code/true examples - malicious/'))
+        true_files_detected = {path for path in files if path.startswith('code/true-examples-malicious/')}
+        true_total = len(os.listdir('code/true-examples-malicious/'))
         true_rate = len(true_files_detected)/true_total * 100
         myTable.add_column(columns[1], [len(true_files_detected), str(true_rate) + '%'])
 
     if options[0] == 0 or options[0] == 2:
-        false_files_detected = {path for path in files if path.startswith('code/false examples/')}
-        false_total = len(os.listdir('code/false examples/'))
+        false_files_detected = {path for path in files if path.startswith('code/false-examples/')}
+        false_total = len(os.listdir('code/false-examples/'))
         false_positives = len(false_files_detected)/false_total
         false_rate = (1 - false_positives) * 100
         myTable.add_column(columns[2], [len(false_files_detected), str(false_rate) + '%'])
         print('False positive rate:' + str(false_positives*100) + '%')
 
     print(myTable)
-    # print("Ran rules on {}")
 
 def usage():
     print("Usage: python scan.py <true/false/all> <specific-rule/all>")
+    sys.exit(1)
 
 def main():
 
@@ -56,10 +56,10 @@ def main():
 
     if len(sys.argv) == 3:
         if sys.argv[1] == 'true':
-            target_dir += 'true examples - malicious'
+            target_dir += 'true-examples-malicious'
             options[0] += 1
         elif sys.argv[1] == 'false':
-            target_dir += 'false examples'
+            target_dir += 'false-examples'
             options[0] += 2 
         elif sys.argv[1] != 'all':
             usage()
@@ -71,7 +71,6 @@ def main():
             usage()
     elif len(sys.argv) != 1:
         usage()
-        return
 
     run_semgrep(target_dir, rules_file, options)
 
