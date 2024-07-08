@@ -1,0 +1,37 @@
+{
+    "name": "symfony/sendgrid-mailer",
+    "type": "symfony-mailer-bridge",
+    "description": "Symfony Sendgrid Mailer Bridge",
+    "keywords": [],
+    "homepage": "https://symfony.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fabien Potencier",
+            "email": "fabien@symfony.com"
+        },
+        {
+            "name": "Symfony Community",
+            "homepage": "https://symfony.com/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "symfony/mailer": "^6.4|^7.0"
+    },
+    "require-dev": {
+        "symfony/http-client": "^6.4|^7.0",
+        "symfony/webhook": "^6.4|^7.0"
+    },
+    "conflict": {
+        "symfony/mime": "<6.4",
+        "symfony/http-foundation": "<6.4"
+    },
+    "autoload": {
+        "psr-4": { "Symfony\\Component\\Mailer\\Bridge\\Sendgrid\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "minimum-stability": "dev"
+}

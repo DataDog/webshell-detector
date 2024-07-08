@@ -1,0 +1,34 @@
+{
+    "name": "symfony/redis-messenger",
+    "type": "symfony-messenger-bridge",
+    "description": "Symfony Redis extension Messenger Bridge",
+    "keywords": [],
+    "homepage": "https://symfony.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Fabien Potencier",
+            "email": "fabien@symfony.com"
+        },
+        {
+            "name": "Symfony Community",
+            "homepage": "https://symfony.com/contributors"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "ext-redis": "*",
+        "symfony/messenger": "^6.4|^7.0"
+    },
+    "require-dev": {
+        "symfony/property-access": "^6.4|^7.0",
+        "symfony/serializer": "^6.4|^7.0"
+    },
+    "autoload": {
+        "psr-4": { "Symfony\\Component\\Messenger\\Bridge\\Redis\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "minimum-stability": "dev"
+}
