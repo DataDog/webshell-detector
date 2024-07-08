@@ -1,50 +1,44 @@
 # webshell-detector
-webshell-detector is a repository that stores static analysis rules for detecting web shells and a test corpus of web shell code. This project utilizes Semgrep for static analysis and provides a script to scan and analyze the results.
-## Features
-Static Analysis Rules: A set of Semgrep rules designed to detect web shells.  
-Test Corpus: A collection of web shell code and non-malicious web server code for testing the detection rules.  
-Scanning Script: A Python script to run Semgrep scans on the test corpus and analyze the results.
+webshell-detector is a repository that stores static analysis rules for detecting web shells and a test corpus of web shell code. This project utilizes [Semgrep rule writing](https://semgrep.dev/docs/writing-rules/overview) for static analysis and provides a script to scan and analyze the results.
+## File Structure
+```
+.  
+├── code                            # test corpus for detection rules  
+│   ├── false-examples              # non-malicious code  
+│   └── true-examples-malicious     # malicious code, do not run these files directly  
+├── rules                           # set of semgrep rules designed for web shell detection  
+├── scan.py                         # script to run semgrep scans on the test corpus  
+└── README.md
+```
 ## Usage
 ### Running the Script  
 The scanning script scan.py allows you to test the Semgrep rules against different parts of the test corpus and with different sets of rules.
-
-#### Usage:
+```  
+> [!WARNING]
+> Do not run any code in code/true-examples-malicious/
 ```
-python scan.py <true/false/all> <specific-rule/all>
+#### Sample usage:
 ```
-#### Arguments:
-* Test Corpus:
-    * true: Tests only the true examples of web shell code.
-    * false: Tests only the false examples.
-    * all: Tests both true and false examples.
-* Rules:
-    * specific-rule: Tests using a specific Semgrep rule file.
-    * all: Tests using all the Semgrep rules in the rules/ directory.
-
-#### Examples:  
-Run with default settings (all test corpus and all rules):
-```
+# Scan with default settings: all true examples under code/true-examples-malicious, all false examples under code/false-examples/, and all rules under rules/
 python scan.py
-```
-This command defaults to testing all examples in the code/ directory with all rules in the rules/ directory.
 
-Run on true examples with all rules:
-```
-python scan.py true all
-```
-Run on false examples with a specific rule:
-```
-python scan.py false path/to/specific-rule.yml
+# Scan a specific path of true examples with all rules
+python scan.py --true-examples code/true-examples-malicious/
+
+# Scan a specific path of false examples with all rules
+python scan.py --false-examples code/false-examples/
+
+# Scan default true and false examples with 2 specific rules
+python scan.py --rules rules/perms.yml --rules rules/obfuscation.yml
 ```
 #### Output
-The script will output the number of unique files detected by Semgrep and categorize it based on the true and false code examples as well as a false positive percentage.  
+The script will output the number of unique files detected by Semgrep, detection rate, and categorize it based on the true and false code examples.  
 Example:
 ```
-False positive rate:0.0%
-+--------------------------+--------+--------+
-|                          |  True  | False  |
-+--------------------------+--------+--------+
-| Number of files detected |   3    |   0    |
-|      Detection rate      | 100.0% | 100.0% |
-+--------------------------+--------+--------+
++--------------------------+--------+-------+
+|                          |  true  | false |
++--------------------------+--------+-------+
+| Number of files detected |   78   |   2   |
+|      Detection rate      | 38.81% | 0.12% |
++--------------------------+--------+-------+
 ```

@@ -45,14 +45,14 @@ def run_semgrep(target_dir: str, rules: Tuple[str, ...]) -> Optional[List[int]]:
     return [files_detected, rate]
 
 def generate_table(results: Dict[str, List[int]]):
-    myTable = PrettyTable()
-    myTable.add_column('', ['Number of files detected', 'Detection rate'])
+    output_table = PrettyTable()
+    output_table.add_column('', ['Number of files detected', 'Detection rate'])
 
     for key in results:
         results[key][1] = str(round(results[key][1], 2)) + '%'
-        myTable.add_column(key, results[key])
+        output_table.add_column(key, results[key])
 
-    print(myTable)
+    return output_table
 
 @click.command()
 @click.option('--true-examples', type=click.Path(exists=True), default=None, help='path to true examples')
@@ -74,7 +74,8 @@ def main(true_examples: str, false_examples: str, rules: Tuple[str, ...]) -> Non
         false_result = run_semgrep(false_examples, rules)
         results['false'] = false_result
 
-    generate_table(results)
+    output_table = generate_table(results)
+    print(output_table)
 
 if __name__ == '__main__':
     main()
