@@ -1,3 +1,4 @@
+from typing import List, Optional, Tuple, Dict
 import click
 import subprocess
 import json
@@ -5,18 +6,17 @@ import sys
 import os
 from prettytable import PrettyTable
 
-def run_semgrep(target_dir, rules):
+def run_semgrep(target_dir: str, rules: Tuple[str, ...]) -> Optional[List[int]]:
 
-    total_output = {}
+    total_output = {
+        "results": [],
+        "errors": [],
+        "paths": {"scanned": []}
+    }
 
-    # should implement this better
-    if target_dir == 'code/false-examples/':
-        test = 'code/false-examples/*/**'
-    else:
-        test = target_dir
-
+    target_dir += '*/**'
     for rule in rules:
-        command = 'semgrep scan --config ' + rule + ' --json ' + test
+        command = 'semgrep scan --config ' + rule + ' --json ' + target_dir
         result = subprocess.run(
             command,
             capture_output=True,
@@ -25,7 +25,7 @@ def run_semgrep(target_dir, rules):
         )
 
         if result.returncode != 0:
-            print(f"Semgrep failed with return code {result.returncode} with command semgrep scan --config {rule} --json {test}\n{result.stderr}")
+            print(f"Semgrep failed with return code {result.returncode} with command semgrep scan --config {rule} --json {target_dir}\n{result.stderr}")
             sys.exit(1)
 
         try:
@@ -34,44 +34,47 @@ def run_semgrep(target_dir, rules):
             print(f"Failed to parse JSON output: {e}")
             sys.exit(1)
         
-        total_output.update(output)
+        total_output['results'].extend(output.get('results', []))
+        total_output['errors'].extend(output.get('errors', []))
+        total_output['paths']['scanned'].extend(output.get('paths', {}).get('scanned', []))
 
-    # might be nice to also print number of files scanned
-    # print(total_output['paths']['scanned'])
+    files_detected = len({result['path'] for result in total_output['results']})
+    files_scanned = len(set(total_output['paths']['scanned']))
+    rate = files_detected/files_scanned * 100
+    
+    return [files_detected, rate]
 
-    files = {result['path'] for result in total_output['results']}
-    files_detected = {path for path in files if path.startswith(target_dir)} 
-    total = len(os.listdir(target_dir))
-    rate = len(files_detected)/total * 100
-    return [len(files_detected), rate]
+def generate_table(results: Dict[str, List[int]]):
+    myTable = PrettyTable()
+    myTable.add_column('', ['Number of files detected', 'Detection rate'])
+
+    for key in results:
+        results[key][1] = str(round(results[key][1], 2)) + '%'
+        myTable.add_column(key, results[key])
+
+    print(myTable)
 
 @click.command()
 @click.option('--true-examples', type=click.Path(exists=True), default=None, help='path to true examples')
 @click.option('--false-examples', type=click.Path(exists=True), default=None, help='path to false examples')
 @click.option('--rules', multiple=True, type=click.Path(exists=True), default=None, help='path to rules')
-def main(true_examples, false_examples, rules):
-
-    columns = ['', 'True', 'False']
-    myTable = PrettyTable()
-    myTable.add_column(columns[0], ['Number of files detected', 'Detection rate'])
-
+def main(true_examples: str, false_examples: str, rules: Tuple[str, ...]) -> None:
+    
     if not true_examples and not false_examples:
         true_examples = 'code/true-examples-malicious/'
         false_examples = 'code/false-examples/'
     if not rules:
         rules = ['rules/']
 
+    results = {}
     if true_examples:
         true_result = run_semgrep(true_examples, rules)
-        true_result[1] = str(true_result[1]) + '%'
-        myTable.add_column(columns[1], true_result)
+        results['true'] = true_result
     if false_examples:
         false_result = run_semgrep(false_examples, rules)
-        false_result[1] = str(false_result[1]) + '%'
-        myTable.add_column(columns[2], false_result)
-        print('False positive rate: ' + false_result[1])
-    
-    print(myTable)
+        results['false'] = false_result
+
+    generate_table(results)
 
 if __name__ == '__main__':
     main()
