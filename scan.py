@@ -44,13 +44,11 @@ def run_semgrep(target_dir: str, rules: Tuple[str, ...]) -> Optional[List[int]]:
     
     return [files_detected, rate]
 
-def generate_table(results: Dict[str, List[int]]):
+def generate_table(results: Dict[str, List[int]]) -> PrettyTable:
     output_table = PrettyTable()
     output_table.add_column('', ['Number of files detected', 'Detection rate'])
 
-    for key in results:
-        results[key][1] = str(round(results[key][1], 2)) + '%'
-        output_table.add_column(key, results[key])
+    [output_table.add_column(key, [results[key][0], f"{round(results[key][1], 2)}%"]) for key in results]
 
     return output_table
 
