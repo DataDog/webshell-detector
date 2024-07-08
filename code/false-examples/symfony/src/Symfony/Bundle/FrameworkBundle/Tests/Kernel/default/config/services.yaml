@@ -1,4 +1,0 @@
-services:
-    foo_service:
-        class: stdClass
-        public: true

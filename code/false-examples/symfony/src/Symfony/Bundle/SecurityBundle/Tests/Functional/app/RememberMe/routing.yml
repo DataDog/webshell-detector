@@ -1,9 +1,0 @@
-login:
-    path: /login
-
-logout:
-    path: /logout
-
-profile:
-    path: /profile
-    controller: Symfony\Bundle\SecurityBundle\Tests\Functional\Bundle\RememberMeBundle\Controller\ProfileController

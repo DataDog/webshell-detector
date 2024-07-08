@@ -1,4 +1,0 @@
-Symfony\Bundle\FrameworkBundle\Tests\Functional\Bundle\LegacyBundle\Entity\LegacyPerson:
-    attributes:
-        name:
-            serialized_name: 'full_name'

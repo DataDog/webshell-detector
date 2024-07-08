@@ -1,4 +1,0 @@
-Symfony\Bundle\FrameworkBundle\Tests\Functional\Bundle\ModernBundle\src\Entity\ModernPerson:
-    attributes:
-        name:
-            serialized_name: 'full_name'

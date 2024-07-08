@@ -1,4 +1,0 @@
-services:
-    closure_property:
-        class: stdClass
-        properties: { foo: !closure '@bar' }

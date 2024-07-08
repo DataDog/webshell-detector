@@ -1,3 +1,0 @@
-welcome:
-    path: /
-    controller: 'kernel'
