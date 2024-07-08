@@ -17,6 +17,7 @@ def run_semgrep(target_dir: str, rules: Tuple[str, ...]) -> Optional[List[int]]:
     target_dir += '*/**'
     for rule in rules:
         command = 'semgrep scan --config ' + rule + ' --json ' + target_dir
+        print(command)
         result = subprocess.run(
             command,
             capture_output=True,
@@ -55,14 +56,12 @@ def generate_table(results: Dict[str, List[int]]) -> PrettyTable:
 @click.command()
 @click.option('--true-examples', type=click.Path(exists=True), default=None, help='path to true examples')
 @click.option('--false-examples', type=click.Path(exists=True), default=None, help='path to false examples')
-@click.option('--rules', multiple=True, type=click.Path(exists=True), default=None, help='path to rules')
+@click.option('--rules', multiple=True, type=click.Path(exists=True), default=['rules/'], help='path to rules')
 def main(true_examples: str, false_examples: str, rules: Tuple[str, ...]) -> None:
     
     if not true_examples and not false_examples:
         true_examples = 'code/true-examples-malicious/'
         false_examples = 'code/false-examples/'
-    if not rules:
-        rules = ['rules/']
 
     results = {}
     if true_examples:
