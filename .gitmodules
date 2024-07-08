@@ -1,3 +1,6 @@
 [submodule "code/false examples/WordPress"]
 	path = code/false-examples/WordPress
 	url = https://github.com/WordPress/WordPress.git
+[submodule "code/false-examples/mediawiki"]
+	path = code/false-examples/mediawiki
+	url = https://github.com/wikimedia/mediawiki.git
