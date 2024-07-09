@@ -1,12 +1,12 @@
 [submodule "code/false examples/WordPress"]
-	path = code/false-examples/WordPress
+	path = tests/false-examples/WordPress
 	url = https://github.com/WordPress/WordPress.git
 [submodule "code/false-examples/mediawiki"]
-	path = code/false-examples/mediawiki
+	path = tests/false-examples/mediawiki
 	url = https://github.com/wikimedia/mediawiki.git
 [submodule "code/false-examples/Laravel-5-Bootstrap-3-Starter-Site"]
-	path = code/false-examples/Laravel-5-Bootstrap-3-Starter-Site
+	path = tests/false-examples/Laravel-5-Bootstrap-3-Starter-Site
 	url = https://github.com/mrakodol/Laravel-5-Bootstrap-3-Starter-Site.git
 [submodule "code/false-examples/symfony"]
-	path = code/false-examples/symfony
+	path = tests/false-examples/symfony
 	url = https://github.com/symfony/symfony.git

@@ -61,8 +61,8 @@ def generate_table(results: Dict[str, List[int]]):
 def main(true_examples: str, false_examples: str, rules: Tuple[str, ...]) -> None:
     
     if not true_examples and not false_examples:
-        true_examples = 'code/true-examples-malicious/'
-        false_examples = 'code/false-examples/'
+        true_examples = 'tests/true-examples/'
+        false_examples = 'tests/false-examples/'
     if not rules:
         rules = ['rules/']
 
