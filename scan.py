@@ -17,6 +17,7 @@ def run_semgrep(target_dir: str, rules: Tuple[str, ...]) -> Optional[List[int]]:
     target_dir += '*/**'
     for rule in rules:
         command = 'semgrep scan --config ' + rule + ' --json ' + target_dir
+        print(command)
         result = subprocess.run(
             command,
             capture_output=True,
@@ -44,20 +45,18 @@ def run_semgrep(target_dir: str, rules: Tuple[str, ...]) -> Optional[List[int]]:
     
     return [files_detected, rate]
 
-def generate_table(results: Dict[str, List[int]]):
+def generate_table(results: Dict[str, List[int]]) -> PrettyTable:
     output_table = PrettyTable()
     output_table.add_column('', ['Number of files detected', 'Detection rate'])
 
-    for key in results:
-        results[key][1] = str(round(results[key][1], 2)) + '%'
-        output_table.add_column(key, results[key])
+    [output_table.add_column(key, [results[key][0], f"{round(results[key][1], 2)}%"]) for key in results]
 
     return output_table
 
 @click.command()
 @click.option('--true-examples', type=click.Path(exists=True), default=None, help='path to true examples')
 @click.option('--false-examples', type=click.Path(exists=True), default=None, help='path to false examples')
-@click.option('--rules', multiple=True, type=click.Path(exists=True), default=None, help='path to rules')
+@click.option('--rules', multiple=True, type=click.Path(exists=True), default=['rules/'], help='path to rules')
 def main(true_examples: str, false_examples: str, rules: Tuple[str, ...]) -> None:
     
     if not true_examples and not false_examples:
