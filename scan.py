@@ -1,23 +1,34 @@
-from typing import List, Optional, Tuple, Dict
 import click
 import subprocess
 import json
 import sys
 import os
+import shlex
+from typing import List, Optional, Tuple, Dict
 from prettytable import PrettyTable
 
-def run_semgrep(target_dir: str, rules: Tuple[str, ...]) -> Optional[List[int]]:
+class Scanner:
+    def __init__(self, target_dir:str, rules: Tuple[str, ...]) -> None:
+        self.target_dir = target_dir
+        self.rules = rules
+        self.total_output = {
+            "results": [],
+            "errors": [],
+            "paths": {"scanned": []}
+        }
+        self.batch_size = 5000
+    
+    def run(self) -> List[int]:
+        files = self.find_files()
+        for i in range(0, len(files), self.batch_size):
+            batch = files[i:i+self.batch_size]
+            for rule in self.rules:
+                self.scan(rule, batch)
+        return self.calculate_results()
 
-    total_output = {
-        "results": [],
-        "errors": [],
-        "paths": {"scanned": []}
-    }
-
-    target_dir += '*/**'
-    for rule in rules:
-        command = 'semgrep scan --config ' + rule + ' --json ' + target_dir
-        print(command)
+    def scan(self, rule:str, batch:List[str]) -> None:
+        batch_str = ' '.join(shlex.quote(file) for file in batch)
+        command = 'semgrep scan --config ' + rule + ' --json ' + batch_str
         result = subprocess.run(
             command,
             capture_output=True,
@@ -26,8 +37,7 @@ def run_semgrep(target_dir: str, rules: Tuple[str, ...]) -> Optional[List[int]]:
         )
 
         if result.returncode != 0:
-            print(f"Semgrep failed with return code {result.returncode} with command semgrep scan --config {rule} --json {target_dir}\n{result.stderr}")
-            sys.exit(1)
+            print(f"Semgrep failed with return code {result.returncode} with command semgrep scan --config {rule} --json {self.target_dir}\n{result.stderr}")
 
         try:
             output = json.loads(result.stdout)
@@ -35,46 +45,63 @@ def run_semgrep(target_dir: str, rules: Tuple[str, ...]) -> Optional[List[int]]:
             print(f"Failed to parse JSON output: {e}")
             sys.exit(1)
         
-        total_output['results'].extend(output.get('results', []))
-        total_output['errors'].extend(output.get('errors', []))
-        total_output['paths']['scanned'].extend(output.get('paths', {}).get('scanned', []))
-
-    files_detected = len({result['path'] for result in total_output['results']})
-    files_scanned = len(set(total_output['paths']['scanned']))
-    rate = files_detected/files_scanned * 100
+        self.total_output['results'].extend(output.get('results', []))
+        self.total_output['errors'].extend(output.get('errors', []))
+        self.total_output['paths']['scanned'].extend(output.get('paths', {}).get('scanned', []))
     
-    return [files_detected, rate]
+    def find_files(self) -> List[str]:
+        file_list = []
+        for root, _ , files in os.walk(os.path.dirname(self.target_dir)):
+            for file in files:
+                if file.endswith(('.php')):
+                    file_list.append(os.path.join(root, file))
+        return file_list
 
-def generate_table(results: Dict[str, List[int]]) -> PrettyTable:
-    output_table = PrettyTable()
-    output_table.add_column('', ['Number of files detected', 'Detection rate'])
+    def calculate_results(self) -> List[int]:
+        files_detected = len({result['path'] for result in self.total_output['results']})
+        files_scanned = len(set(self.total_output['paths']['scanned'])) 
+        rate = files_detected/files_scanned * 100 if files_scanned > 0 else 0
+        return [files_detected, rate]
 
-    [output_table.add_column(key, [results[key][0], f"{round(results[key][1], 2)}%"]) for key in results]
+class CLI:
+    def __init__(self, true_examples:str, false_examples:str, rules: Tuple[str, ...]) -> None:
+        self.true_examples = true_examples
+        self.false_examples = false_examples
 
-    return output_table
+        # Run on default test set when neither true or false examples are inputted
+        if not self.true_examples and not self.false_examples:
+            self.true_examples = 'tests/true-examples/'
+            self.false_examples = 'tests/false-examples/'
+        
+        self.rules = rules or ['rules/']
+        self.results = {}
+    
+    def run(self) -> None:
+        if self.true_examples:
+            true_result = Scanner(self.true_examples, self.rules).run()
+            self.results['true'] = true_result
+        if self.false_examples:
+            false_result = Scanner(self.false_examples, self.rules).run()
+            self.results['false'] = false_result
+        
+        output_table = self.generate_table(self.results)
+        print(output_table)
+    
+    def generate_table(self, results: Dict[str, List[int]]) -> PrettyTable:
+        output_table = PrettyTable()
+        
+        output_table.add_column('', ['Number of files detected', 'Detection rate'])
+        [output_table.add_column(key, [results[key][0], f"{round(results[key][1], 2)}%"]) for key in results]
+
+        return output_table
 
 @click.command()
 @click.option('--true-examples', type=click.Path(exists=True), default=None, help='path to true examples')
 @click.option('--false-examples', type=click.Path(exists=True), default=None, help='path to false examples')
 @click.option('--rules', multiple=True, type=click.Path(exists=True), default=['rules/'], help='path to rules')
 def main(true_examples: str, false_examples: str, rules: Tuple[str, ...]) -> None:
-    
-    if not true_examples and not false_examples:
-        true_examples = 'tests/true-examples/'
-        false_examples = 'tests/false-examples/'
-    if not rules:
-        rules = ['rules/']
-
-    results = {}
-    if true_examples:
-        true_result = run_semgrep(true_examples, rules)
-        results['true'] = true_result
-    if false_examples:
-        false_result = run_semgrep(false_examples, rules)
-        results['false'] = false_result
-
-    output_table = generate_table(results)
-    print(output_table)
+    cli = CLI(true_examples, false_examples, rules)
+    cli.run()
 
 if __name__ == '__main__':
     main()
