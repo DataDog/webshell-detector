@@ -4,6 +4,7 @@ import json
 import sys
 import os
 import shlex
+import glob
 from typing import List, Tuple, Dict
 from itertools import batched
 from prettytable import PrettyTable
@@ -48,11 +49,8 @@ class Scanner:
         self.total_output["paths"]["scanned"].extend(output.get("paths", {}).get("scanned", []))
 
     def find_files(self) -> List[str]:
-        file_list = []
-        for root, _, files in os.walk(os.path.dirname(self.target_dir)):
-            for file in files:
-                if file.endswith(".php"):
-                    file_list.append(os.path.join(root, file))
+        pattern = os.path.join(self.target_dir, '**', '*.php')
+        file_list = glob.glob(pattern, recursive=True)
         return file_list
 
     def calculate_results(self) -> List[int]:
