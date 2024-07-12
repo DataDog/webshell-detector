@@ -1,0 +1,22 @@
+rules:
+  - id: code-execution
+    languages:
+      - php
+    message: test
+    metadata:
+      description: test
+    mode: taint
+    pattern-sources:
+      - pattern-either:
+        - pattern: $_GET
+        - pattern: $_POST
+        - pattern: $_COOKIE
+        - pattern: $_REQUEST
+        - pattern: $_SERVER
+    pattern-sinks:
+      - patterns:
+          - pattern: $FUNC(...)
+          - metavariable-regex:
+              metavariable: $FUNC
+              regex: .*(shell_exec|eval).*
+    severity: WARNING
