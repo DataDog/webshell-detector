@@ -56,7 +56,11 @@ class Scanner:
     def calculate_results(self) -> List[int]:
         files_detected = len(set(result["path"] for result in self.total_output["results"]))
         files_scanned = len(set(self.total_output["paths"]["scanned"]))
-        rate = files_detected / files_scanned * 100 if files_scanned else 0
+        if files_scanned:
+            rate = files_detected / files_scanned * 100
+        else:
+            rate = 0
+            print(f"No files scanned in {self.target_dir}")
         return [files_detected, rate]
 
 
