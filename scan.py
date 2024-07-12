@@ -4,7 +4,8 @@ import json
 import sys
 import os
 import shlex
-from typing import List, Optional, Tuple, Dict
+from typing import List, Tuple, Dict
+from itertools import batched
 from prettytable import PrettyTable
 
 class Scanner:
@@ -20,8 +21,7 @@ class Scanner:
     
     def run(self) -> List[int]:
         files = self.find_files()
-        for i in range(0, len(files), self.batch_size):
-            batch = files[i:i+self.batch_size]
+        for batch in batched(files, self.batch_size):
             for rule in self.rules:
                 self.scan(rule, batch)
         return self.calculate_results()
