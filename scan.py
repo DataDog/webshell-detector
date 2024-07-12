@@ -27,6 +27,10 @@ class Scanner:
         return self.calculate_results()
 
     def scan(self, rule:str, batch:List[str]) -> None:
+
+        if not batch:
+            return
+
         batch_str = ' '.join(shlex.quote(file) for file in batch)
         command = 'semgrep scan --config ' + rule + ' --json ' + batch_str
         result = subprocess.run(
