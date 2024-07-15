@@ -18,5 +18,11 @@ rules:
           - pattern: $FUNC(...)
           - metavariable-regex:
               metavariable: $FUNC
-              regex: .*(shell_exec|eval).*
+              regex: (eval|exec|assert|passthru|shellexec|shell_exec|system|mysql_connect|mssql_connect|pg_connect|bzcompress|gzcompress|gzencode|posix_getuid|posix_uname|ocilogon)
+    pattern-sanitizers:
+      - patterns:
+          - pattern: $FUNC(...)
+          - metavariable-regex:
+              metavariable: $FUNC
+              regex: (escapeshellarg|escapeshellcmd|htmlspecialchars|htmlentities)
     severity: WARNING

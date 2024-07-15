@@ -19,11 +19,11 @@ rules:
                   }
           - metavariable-regex:
               metavariable: $FUNC
-              regex: .*(base64_decode|base64_encode|gzuncompress|gzinflate|str_rot13|strrev|openssl_decrypt).*
+              regex: (base64_decode|base64_encode|gzuncompress|gzinflate|str_rot13|strrev|openssl_decrypt)
     pattern-sinks:
       - patterns:
           - pattern: $FUNC(...)
           - metavariable-regex:
               metavariable: $FUNC
-              regex: .*(eval|assert).*
+              regex: (eval|assert)
     severity: WARNING
