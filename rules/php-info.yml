@@ -1,0 +1,11 @@
+rules:
+  - id: php-info
+    languages:
+      - php
+    message: This file is running phpinfo()
+    metadata:
+      description: Identify when phpinfo() is run
+      tags: LOW
+    patterns:
+      - pattern: phpinfo()
+    severity: WARNING
