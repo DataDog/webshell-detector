@@ -5,6 +5,7 @@ rules:
     message: This file is running code that has been obfuscated
     metadata:
       description: Identify when obfuscated code is passed into an eval function
+      tags: HIGH
     mode: taint
     pattern-sources:
       - patterns:
@@ -19,7 +20,7 @@ rules:
                   }
           - metavariable-regex:
               metavariable: $FUNC
-              regex: (base64_decode|base64_encode|gzuncompress|gzinflate|str_rot13|strrev|openssl_decrypt)
+              regex: (base64_decode|base64_encode|gzuncompress|gzinflate|gzdecode|gzinflate|str_rot13|strrev|openssl_decrypt|urldecode|rawurldecode|chr|ord|hex2bin|pack|unpack|strtr)
     pattern-sinks:
       - patterns:
           - pattern: $FUNC(...)
