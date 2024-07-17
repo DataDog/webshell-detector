@@ -2,9 +2,9 @@ rules:
   - id: fork-process
     languages:
       - php
-    message: sample
+    message: This file is forking a process
     metadata:
-      description: sample
+      description: Identify when a process is forked
       tags: LOW
     patterns:
       - pattern-either:
