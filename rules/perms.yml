@@ -8,11 +8,13 @@ rules:
       tags: MEDIUM
     patterns:
       - pattern-either:
-          - patterns:
-              - pattern: ($PERMS & $HEX) == $HEX
-              - metavariable-regex:
-                  metavariable: $HEX
-                  regex: (0xC000|0xA000|0x8000|0x6000|0x4000|0x2000|0x1000)
+          - pattern: ($PERMS & 0xC000) == $HEX
+          - pattern: ($PERMS & 0xA000) == $HEX
+          - pattern: ($PERMS & 0x8000) == $HEX
+          - pattern: ($PERMS & 0x6000) == $HEX
+          - pattern: ($PERMS & 0x4000) == $HEX
+          - pattern: ($PERMS & 0x2000) == $HEX
+          - pattern: ($PERMS & 0x1000) == $HEX
           - pattern: chmod(..., 0777)
           - pattern: chmod(..., 0775)
           - pattern: chmod(..., 0700)

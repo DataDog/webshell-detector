@@ -16,15 +16,35 @@ rules:
         - pattern: $_SERVER
         - pattern: $_FILES
     pattern-sinks:
-      - patterns:
-          - pattern: $FUNC(...)
-          - metavariable-regex:
-              metavariable: $FUNC
-              regex: (eval|exec|assert|passthru|shellexec|shell_exec|pcntl_exec|system|mysql_connect|mssql_connect|pg_connect|bzcompress|gzcompress|gzencode|posix_getuid|posix_uname|ocilogon|proc_open|chmod|mkdir|chown|chgrp|strtr)
+      - pattern-either:
+          - pattern: eval(...)
+          - pattern: exec(...)
+          - pattern: assert(...)
+          - pattern: passthru(...)
+          - pattern: shellexec(...)
+          - pattern: shell_exec(...)
+          - pattern: pcntl_exec(...)
+          - pattern: system(...)
+          - pattern: mysql_connect(...)
+          - pattern: mssql_connect(...)
+          - pattern: pg_connect(...)
+          - pattern: bzcompress(...)
+          - pattern: gzcompress(...)
+          - pattern: gzencode(...)
+          - pattern: posix_getuid(...)
+          - pattern: posix_uname(...)
+          - pattern: ocilogon(...)
+          - pattern: proc_open(...)
+          - pattern: chmod(...)
+          - pattern: mkdir(...)
+          - pattern: chown(...)
+          - pattern: chgrp(...)
+          - pattern: strtr(...)
     pattern-sanitizers:
-      - patterns:
-          - pattern: $FUNC(...)
-          - metavariable-regex:
-              metavariable: $FUNC
-              regex: .*(escapeshellarg|escapeshellcmd|htmlspecialchars|htmlentities|escape|Escape).*
+      - pattern-either:
+          - pattern: escapeshellarg(...)
+          - pattern: escapeshellcmd(...)
+          - pattern: htmlspecialchars(...)
+          - pattern: htmlentities(...)
+          - pattern: escape(...)
     severity: WARNING

@@ -9,9 +9,9 @@ rules:
     mode: taint
     pattern-sources:
       - pattern-either:
-          - pattern: $_POST[...]
-          - pattern: $_GET[...]
-          - pattern: $_FILE[...]
+          - pattern: $_POST
+          - pattern: $_GET
+          - pattern: $_FILE
     pattern-sinks:
       - pattern-either:
           - pattern: fwrite(...)
