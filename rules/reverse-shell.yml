@@ -19,8 +19,9 @@ rules:
             - metavariable-regex:
                 metavariable: $FUNC
                 regex: (exec|shell_exec|system|passthru)
-          - pattern: |
-              $SOCK = fsockopen(...);
-              ...
-              `...`;
+          - patterns:
+            - pattern-inside: |
+                $SOCK = fsockopen(...);
+                ...
+            - pattern-regex: \`sh.*?\`
     severity: WARNING
