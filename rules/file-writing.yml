@@ -1,0 +1,21 @@
+rules:
+  - id: file-writing
+    languages:
+      - php
+    message: sample
+    metadata:
+      description: sample
+      tags: LOW
+    mode: taint
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_POST[...]
+          - pattern: $_GET[...]
+          - pattern: $_FILE[...]
+    pattern-sinks:
+      - pattern-either:
+          - pattern: fwrite(...)
+          - pattern: file_put_contents(...)
+          - pattern: fputs(...)
+          - pattern: fprintf(...)
+    severity: WARNING

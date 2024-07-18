@@ -20,7 +20,7 @@ rules:
           - pattern: $FUNC(...)
           - metavariable-regex:
               metavariable: $FUNC
-              regex: (eval|exec|assert|passthru|shellexec|shell_exec|pcntl_exec|system|mysql_connect|mssql_connect|pg_connect|bzcompress|gzcompress|gzencode|posix_getuid|posix_uname|ocilogon|proc_open|mail|fwrite|chmod|mkdir|chown|chgrp|strtr)
+              regex: (eval|exec|assert|passthru|shellexec|shell_exec|pcntl_exec|system|mysql_connect|mssql_connect|pg_connect|bzcompress|gzcompress|gzencode|posix_getuid|posix_uname|ocilogon|proc_open|chmod|mkdir|chown|chgrp|strtr)
     pattern-sanitizers:
       - patterns:
           - pattern: $FUNC(...)
