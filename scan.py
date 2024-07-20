@@ -11,18 +11,22 @@ from prettytable import PrettyTable
 
 
 class Scanner:
-    def __init__(self, target_dir: str, rules: Tuple[str, ...], tags: Tuple[str, ...]) -> None:
+    def __init__(self, target_dir: str, rules: Tuple[str, ...], tags: Tuple[str, ...], examples: bool) -> None:
         self.target_dir = target_dir
         self.rules = rules
+        self.tags = tags
+        self.examples = examples
         self.total_output = {"results": [], "errors": [], "paths": {"scanned": []}}
         self.batch_size = 5000
-        self.tags = tags
+        self.files_detected = set()
+        self.files_scanned = set()
 
     def run(self) -> List[int]:
         files = self.find_files()
         for batch in batched(files, self.batch_size):
             for rule in self.rules:
                 self.scan(rule, batch)
+        self.compile_results()
         return self.calculate_results()
 
     def scan(self, rule: str, batch: List[str]) -> None:
@@ -35,9 +39,7 @@ class Scanner:
         result = subprocess.run(command, capture_output=True, text=True, shell=True)
 
         if result.returncode != 0:
-            print(
-                f"Semgrep failed with return code {result.returncode} with command semgrep scan --config {rule} --json {self.target_dir}\n{result.stderr}"
-            )
+            print(f"Semgrep failed with return code {result.returncode} with command semgrep scan --config {rule} --json {self.target_dir}\n{result.stderr}")
 
         try:
             output = json.loads(result.stdout)
@@ -64,10 +66,13 @@ class Scanner:
         file_list = glob.glob(pattern, recursive=True)
         return file_list
 
+    def compile_results(self) -> None:
+        self.files_detected = set(result["path"] for result in self.total_output["results"])
+        self.files_scanned = set(self.total_output["paths"]["scanned"])
+
     def calculate_results(self) -> List[int]:
-        files_detected = len(set(result["path"] for result in self.total_output["results"]))
-        files_scanned = len(set(self.total_output["paths"]["scanned"]))
-        # print(set(result["path"] for result in self.total_output["results"]))
+        files_detected = len(self.files_detected)
+        files_scanned = len(self.files_scanned)
         if files_scanned:
             rate = files_detected / files_scanned * 100
         else:
@@ -75,15 +80,15 @@ class Scanner:
             print(f"No files scanned in {self.target_dir}")
         return [files_detected, rate]
 
+    def list_files(self) -> Tuple[str, List[os.PathLike]]:
+        if self.examples:
+            return "False Negatives:", [path for path in self.files_scanned if path not in self.files_detected]
+        else:
+            return "False Positives:", [path for path in self.files_detected]
+
 
 class CLI:
-    def __init__(
-        self,
-        true_examples: str,
-        false_examples: str,
-        rules: Tuple[str, ...],
-        tags: Tuple[str, ...],
-    ) -> None:
+    def __init__(self, true_examples: str, false_examples: str, rules: Tuple[str, ...], tags: Tuple[str, ...], list_files: Tuple[str, ...]) -> None:
         self.true_examples = true_examples
         self.false_examples = false_examples
 
@@ -93,26 +98,38 @@ class CLI:
             self.false_examples = "tests/false-examples/"
 
         self.rules = rules
-        self.results = {}
         self.tags = tags
+        self.list_files = list_files
+        self.results = {}
 
     def run(self) -> None:
         if self.true_examples:
-            self.results["true"] = Scanner(self.true_examples, self.rules, self.tags).run()
+            scanner_true = Scanner(self.true_examples, self.rules, self.tags, examples=True)
+            self.results["true"] = scanner_true.run()
         if self.false_examples:
-            self.results["false"] = Scanner(self.false_examples, self.rules, self.tags).run()
-
+            scanner_false = Scanner(self.false_examples, self.rules, self.tags, examples=False)
+            self.results["false"] = scanner_false.run()
         output_table = self.generate_table(self.results)
         print(output_table)
+
+        if self.list_files:
+            if self.true_examples and "FN" in self.list_files:  # scanning on true examples, show false negatives
+                msg, files = scanner_true.list_files()
+            elif self.false_examples and "FP" in self.list_files:  # scanning on false examples, show false positives
+                msg, files = scanner_false.list_files()
+            else:
+                msg, files = ("No FN or FP for the scan options provided. Make sure you are scanning the correct examples for FN or FP checks.", [])
+            self.print_files(msg, files)
+
+    def print_files(self, msg: str, files: List[str]) -> None:
+        print(msg)
+        print(*files, sep="\n")
 
     def generate_table(self, results: Dict[str, List[int]]) -> PrettyTable:
         output_table = PrettyTable()
 
         output_table.add_column("", ["Number of files detected", "Detection rate"])
-        [
-            output_table.add_column(key, [results[key][0], f"{round(results[key][1], 2)}%"])
-            for key in results
-        ]
+        [output_table.add_column(key, [results[key][0], f"{round(results[key][1], 2)}%"]) for key in results]
 
         return output_table
 
@@ -122,13 +139,10 @@ class CLI:
 @click.option("--false-examples", type=click.Path(exists=True), help="path to false examples")
 @click.option("--rules", multiple=True, type=click.Path(exists=True), default=("rules/",), help="path to rules")
 @click.option("--tags", multiple=True, default=["LOW", "MEDIUM", "HIGH"], help="tag options LOW/MEDIUM/HIGH")
+@click.option("--list-files", multiple=True, help="list file options FN/FP")
 def main(
-    true_examples: str,
-    false_examples: str,
-    rules: Tuple[str, ...],
-    tags: Tuple[str, ...],
-) -> None:
-    cli = CLI(true_examples, false_examples, rules, tags)
+    true_examples: str, false_examples: str, rules: Tuple[str, ...], tags: Tuple[str, ...], list_files: Tuple[str, ...]) -> None:
+    cli = CLI(true_examples, false_examples, rules, tags, list_files)
     cli.run()
 
 
