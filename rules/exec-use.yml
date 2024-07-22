@@ -14,6 +14,9 @@ rules:
           - pattern: system($CMD)
           - pattern: passthru($CMD)
           - pattern: assert($CMD)
+          - pattern: `$CMD`
+          - pattern: popen($CMD)
+          - pattern: proc_open($CMD)
       - metavariable-regex:
           metavariable: $CMD
           regex: .*('|")?.*(pwd|id|whoami|cd|ls|cmd|cmnd|cfe|uname|rm|cat|mv|netstat|ps|ifconfig|wget|curl).*('|")?.*
