@@ -2,9 +2,9 @@ rules:
   - id: file-writing
     languages:
       - php
-    message: sample
+    message: This file is writing user input into a file which is a method to deliver web shells
     metadata:
-      description: sample
+      description: Identify when user input is written to a file which is a method to deliver web shells
       tags: LOW
     mode: taint
     pattern-sources:
