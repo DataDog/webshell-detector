@@ -7,21 +7,23 @@ rules:
       description: Identify when a reverse shell is forked with fsockopen
       tags: HIGH
     patterns:
-      - pattern-either:
-          - patterns:
-            - pattern: |
+      - patterns:
+        - pattern-inside: |
                 $SOCK = fsockopen(...);
                 ...
-                $FUNC($CMD);
-            - metavariable-regex:
-                metavariable: $CMD
-                regex: ('|")?sh.*('|")?
-            - metavariable-regex:
-                metavariable: $FUNC
-                regex: (exec|shell_exec|system|passthru)
+        - pattern-either:
+          - pattern-regex: \`sh .*?\`
           - patterns:
-            - pattern-inside: |
-                $SOCK = fsockopen(...);
-                ...
-            - pattern-regex: \`sh.*?\`
+            - pattern-either:
+              - pattern: exec($CMD)
+              - pattern: shell_exec($CMD)
+              - pattern: pcntl_exec($CMD)
+              - pattern: system($CMD)
+              - pattern: passthru($CMD)
+              - pattern: assert($CMD)
+              - pattern: popen($CMD)
+              - pattern: proc_open($CMD)
+            - metavariable-regex:
+                    metavariable: $CMD
+                    regex: ('|")?sh.*('|")?
     severity: WARNING
