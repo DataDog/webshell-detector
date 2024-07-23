@@ -143,8 +143,8 @@ class CLI:
 @click.command()
 @click.option("--true-examples", type=click.Path(exists=True), help="path to true examples")
 @click.option("--false-examples", type=click.Path(exists=True), help="path to false examples")
-@click.option("--rules", multiple=True, type=click.Path(exists=True), default=("rules/",), help="path to rules")
-@click.option("--tags", multiple=True, default=["LOW", "MEDIUM", "HIGH"], help="tag options LOW/MEDIUM/HIGH")
+@click.option("--rule", multiple=True, type=click.Path(exists=True), default=("rules/",), help="path to rules")
+@click.option("--tag", multiple=True, default=["LOW", "MEDIUM", "HIGH"], help="tag options LOW/MEDIUM/HIGH")
 @click.option("--list-files", multiple=True, help="list file options FN/FP")
 def main(
     true_examples: str, false_examples: str, rules: Tuple[str, ...], tags: Tuple[str, ...], list_files: Tuple[str, ...]) -> None:
