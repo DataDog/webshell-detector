@@ -103,10 +103,10 @@ class CLI:
         self.results = {}
 
     def run(self) -> None:
-        if not any(tag in {"HIGH", "MEDIUM", "LOW"} for tag in self.tags): # No valid tags, stop scanning
+        if not any(tag in ("HIGH", "MEDIUM", "LOW") for tag in self.tags): # No valid tags, stop scanning
             print("Invalid tags. Make sure you are scanning with LOW/MEDIUM/HIGH tags.")
             sys.exit(1)
-        elif any(tag not in {"HIGH", "MEDIUM", "LOW"} for tag in self.tags): # Some valid and some invalid tags, continue scanning on valid tags
+        elif any(tag not in ("HIGH", "MEDIUM", "LOW") for tag in self.tags): # Some valid and some invalid tags, continue scanning on valid tags
             print("There are some invalid tags. Make sure you are scanning only with LOW/MEDIUM/HIGH tags. Scanning will continue with valid tags.")
         
         if self.true_examples:
