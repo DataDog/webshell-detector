@@ -10,6 +10,11 @@ from itertools import batched
 from prettytable import PrettyTable
 
 
+# Constants
+FALSE_NEGATIVE = "FN"
+FALSE_POSITIVE = "FP"
+
+
 class Scanner:
     def __init__(self, target_dir: str, rules: Tuple[str, ...], tags: Tuple[str, ...], examples: bool) -> None:
         self.target_dir = target_dir
@@ -82,9 +87,10 @@ class Scanner:
 
     def list_files(self) -> Tuple[str, List[os.PathLike]]:
         if self.examples:
-            return "False Negatives:", [path for path in self.files_scanned if path not in self.files_detected]
+            msg, files = "False Negatives:", [path for path in self.files_scanned if path not in self.files_detected]
         else:
-            return "False Positives:", [path for path in self.files_detected]
+            msg, files = "False Positives:", [path for path in self.files_detected]
+        return msg, files
 
 
 class CLI:
@@ -103,12 +109,12 @@ class CLI:
         self.results = {}
 
     def run(self) -> None:
-        if not any(tag in ("HIGH", "MEDIUM", "LOW") for tag in self.tags): # No valid tags, stop scanning
+        if not any(tag in ("HIGH", "MEDIUM", "LOW") for tag in self.tags):  # No valid tags, stop scanning
             print("Invalid tags. Make sure you are scanning with LOW/MEDIUM/HIGH tags.")
             sys.exit(1)
-        elif any(tag not in ("HIGH", "MEDIUM", "LOW") for tag in self.tags): # Some valid and some invalid tags, continue scanning on valid tags
+        elif any(tag not in ("HIGH", "MEDIUM", "LOW") for tag in self.tags):  # Some valid and some invalid tags, continue scanning on valid tags
             print("There are some invalid tags. Make sure you are scanning only with LOW/MEDIUM/HIGH tags. Scanning will continue with valid tags.")
-        
+
         if self.true_examples:
             scanner_true = Scanner(self.true_examples, self.rules, self.tags, examples=True)
             self.results["true"] = scanner_true.run()
@@ -119,9 +125,9 @@ class CLI:
         print(output_table)
 
         if self.list_files:
-            if self.true_examples and "FN" in self.list_files:  # scanning on true examples, show false negatives
+            if self.true_examples and FALSE_NEGATIVE in self.list_files:  # Scanning on true examples, show false negatives
                 msg, files = scanner_true.list_files()
-            elif self.false_examples and "FP" in self.list_files:  # scanning on false examples, show false positives
+            elif (self.false_examples and FALSE_POSITIVE in self.list_files):  # Scanning on false examples, show false positives
                 msg, files = scanner_false.list_files()
             else:
                 msg, files = "No FN or FP for the scan options provided. Make sure you are scanning the correct examples for FN or FP checks.", []
@@ -143,12 +149,11 @@ class CLI:
 @click.command()
 @click.option("--true-examples", type=click.Path(exists=True), help="path to true examples")
 @click.option("--false-examples", type=click.Path(exists=True), help="path to false examples")
-@click.option("--rule", multiple=True, type=click.Path(exists=True), default=("rules/",), help="path to rules")
+@click.option("--rule", multiple=True, type=click.Path(exists=True), default=("rules/",), help="path to rule")
 @click.option("--tag", multiple=True, default=["LOW", "MEDIUM", "HIGH"], help="tag options LOW/MEDIUM/HIGH")
 @click.option("--list-files", multiple=True, help="list file options FN/FP")
-def main(
-    true_examples: str, false_examples: str, rules: Tuple[str, ...], tags: Tuple[str, ...], list_files: Tuple[str, ...]) -> None:
-    cli = CLI(true_examples, false_examples, rules, tags, list_files)
+def main(true_examples: str, false_examples: str, rule: Tuple[str, ...], tag: Tuple[str, ...], list_files: Tuple[str, ...]) -> None:
+    cli = CLI(true_examples, false_examples, rule, tag, list_files)
     cli.run()
 
 
