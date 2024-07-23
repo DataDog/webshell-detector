@@ -124,7 +124,7 @@ class CLI:
             elif self.false_examples and "FP" in self.list_files:  # scanning on false examples, show false positives
                 msg, files = scanner_false.list_files()
             else:
-                msg, files = ("No FN or FP for the scan options provided. Make sure you are scanning the correct examples for FN or FP checks.", [])
+                msg, files = "No FN or FP for the scan options provided. Make sure you are scanning the correct examples for FN or FP checks.", []
             self.print_files(msg, files)
 
     def print_files(self, msg: str, files: List[str]) -> None:
