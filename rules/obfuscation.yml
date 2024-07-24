@@ -5,7 +5,7 @@ rules:
     message: This file is running code that has been obfuscated
     metadata:
       description: Identify when obfuscated code is passed into an eval function
-      tags: HIGH
+      severity: HIGH
     mode: taint
     pattern-sources:
       - patterns:

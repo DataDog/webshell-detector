@@ -5,7 +5,7 @@ rules:
     message: This file creating a reverse shell with fsockopen
     metadata:
       description: Identify when a reverse shell is forked with fsockopen
-      tags: HIGH
+      severity: HIGH
     patterns:
       - patterns:
         - pattern-inside: |

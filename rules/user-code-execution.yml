@@ -5,7 +5,7 @@ rules:
     message: This file is using user input in potentially dangerous functions that execute code or perform system operations.
     metadata:
       description: Identify when user input is used in potentially dangerous functions
-      tags: HIGH
+      severity: HIGH
     mode: taint
     pattern-sources:
       - pattern-either:

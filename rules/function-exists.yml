@@ -5,7 +5,7 @@ rules:
     message: This file is checking if dangerous functions exist
     metadata:
       description: Identify when a user is checking for dangerous functions
-      tags: MEDIUM
+      severity: MEDIUM
     patterns:
       - pattern-either:
           - pattern: function_exists($FUNC)

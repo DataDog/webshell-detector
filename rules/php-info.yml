@@ -5,7 +5,7 @@ rules:
     message: This file is running phpinfo()
     metadata:
       description: Identify when phpinfo() is run
-      tags: LOW
+      severity: LOW
     patterns:
       - pattern: phpinfo()
     severity: WARNING

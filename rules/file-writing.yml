@@ -5,7 +5,7 @@ rules:
     message: This file is writing user input into a file which is a method to deliver web shells
     metadata:
       description: Identify when user input is written to a file which is a method to deliver web shells
-      tags: LOW
+      severity: LOW
     mode: taint
     pattern-sources:
       - pattern-either:
