@@ -44,13 +44,14 @@ class Scanner:
         result = subprocess.run(command, capture_output=True, text=True, shell=True)
 
         if result.returncode != 0:
-            print(f"Semgrep failed with return code {result.returncode} with command semgrep scan --config {rule} --json {self.target_dir}\n{result.stderr}")
+            print(f"Semgrep failed with return code {result.returncode} with command {command}\n{result.stderr}")
+            raise Exception("Semgrep failed")
 
         try:
             output = json.loads(result.stdout)
         except json.JSONDecodeError as e:
             print(f"Failed to parse JSON output: {e}")
-            sys.exit(1)
+            raise e
 
         filtered_results = self.filter_results(output.get("results", []))
         self.total_output["results"].extend(filtered_results)
@@ -111,7 +112,7 @@ class CLI:
     def run(self) -> None:
         if not any(tag in ("HIGH", "MEDIUM", "LOW") for tag in self.tags):  # No valid tags, stop scanning
             print("Invalid tags. Make sure you are scanning with LOW/MEDIUM/HIGH tags.")
-            sys.exit(1)
+            raise Exception("Invalid tags")
         elif any(tag not in ("HIGH", "MEDIUM", "LOW") for tag in self.tags):  # Some valid and some invalid tags, continue scanning on valid tags
             print("There are some invalid tags. Make sure you are scanning only with LOW/MEDIUM/HIGH tags. Scanning will continue with valid tags.")
 
@@ -150,7 +151,7 @@ class CLI:
 @click.option("--true-examples", type=click.Path(exists=True), help="path to true examples")
 @click.option("--false-examples", type=click.Path(exists=True), help="path to false examples")
 @click.option("--rule", multiple=True, type=click.Path(exists=True), default=("rules/",), help="path to rule")
-@click.option("--tag", multiple=True, default=["LOW", "MEDIUM", "HIGH"], help="tag options LOW/MEDIUM/HIGH")
+@click.option("--tag", multiple=True, default=("HIGH", "MEDIUM", "LOW"), help="tag options LOW/MEDIUM/HIGH")
 @click.option("--list-files", multiple=True, help="list file options FN/FP")
 def main(true_examples: str, false_examples: str, rule: Tuple[str, ...], tag: Tuple[str, ...], list_files: Tuple[str, ...]) -> None:
     cli = CLI(true_examples, false_examples, rule, tag, list_files)
