@@ -12,7 +12,7 @@ rules:
                 $SOCK = fsockopen(...);
                 ...
         - pattern-either:
-          - pattern-regex: \`sh .*?\`
+          - pattern-regex: \`.*\b(sh)\b.*?\`
           - patterns:
             - pattern-either:
               - pattern: exec($CMD)
@@ -25,5 +25,5 @@ rules:
               - pattern: proc_open($CMD)
             - metavariable-regex:
                     metavariable: $CMD
-                    regex: ('|")?sh.*('|")?
+                    regex: ('|")?.*\b(sh)\b.*('|")?
     severity: WARNING

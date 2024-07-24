@@ -18,5 +18,5 @@ rules:
               {if($F1($FUNC)){...}}
       - metavariable-regex:
           metavariable: $FUNC
-          regex: ('|"")?(eval|exec|assert|passthru|shellexec|shell_exec|system|ocilogon)('|"")?
+          regex: ('|"")?.*\b(eval|exec|assert|passthru|shellexec|shell_exec|system|ocilogon)\b.*('|"")?
     severity: WARNING
