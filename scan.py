@@ -44,13 +44,14 @@ class Scanner:
         result = subprocess.run(command, capture_output=True, text=True, shell=True)
 
         if result.returncode != 0:
-            print(f"Semgrep failed with return code {result.returncode} with command semgrep scan --config {rule} --json {self.target_dir}\n{result.stderr}")
+            print(f"Semgrep failed with return code {result.returncode} with command {command}\n{result.stderr}")
+            raise Exception("Semgrep failed")
 
         try:
             output = json.loads(result.stdout)
         except json.JSONDecodeError as e:
             print(f"Failed to parse JSON output: {e}")
-            sys.exit(1)
+            raise e
 
         filtered_results = self.filter_results(output.get("results", []))
         self.total_output["results"].extend(filtered_results)
