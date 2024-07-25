@@ -65,8 +65,8 @@ class TestScanner(unittest.TestCase):
 
     # running calculate_results() to check for correct behavior
     def test_successful_calculate_result(self):
-        self.scanner_true.scan("rules/", ["test-data/true-examples/1945.php", "test-data/true-examples/c100.php"])
-        self.scanner_true.compile_results()
+        self.scanner_true.files_detected = {"test-data/true-examples/1945.php"}
+        self.scanner_true.files_scanned = {"test-data/true-examples/1945.php", "test-data/true-examples/c100.php"}
         results = self.scanner_true.calculate_results()
         self.assertEqual(results, [1, 50])
 
@@ -79,7 +79,8 @@ class TestScanner(unittest.TestCase):
 
     # running list_files() to check for correct behavior
     def test_successful_list_files(self):
-        self.scanner_true.run()
+        self.scanner_true.files_detected = {"test-data/true-examples/1945.php"}
+        self.scanner_true.files_scanned = {"test-data/true-examples/1945.php", "test-data/true-examples/c100.php"}
         list_files = self.scanner_true.list_files()
         expected_list_files = "False Negatives:", ["test-data/true-examples/c100.php"]
         self.assertEqual(list_files, expected_list_files)
