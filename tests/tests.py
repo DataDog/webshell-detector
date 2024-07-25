@@ -15,7 +15,8 @@ class TestScanner(unittest.TestCase):
         self.scanner_true = Scanner("test-data/true-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), True)
         self.scanner_false = Scanner("test-data/false-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), False)
 
-    def test_scan_success(self):
+    # running scan() to check for correct behavior
+    def test_successful_scan_true(self):
         self.scanner_true.scan("rules/", ["test-data/true-examples/1945.php", "test-data/true-examples/c100.php"])
 
         expected_output_detected = ["test-data/true-examples/1945.php"]
@@ -28,13 +29,15 @@ class TestScanner(unittest.TestCase):
         self.assertEqual(detected_paths, expected_output_detected)
         self.assertEqual(self.scanner_true.total_output["paths"]["scanned"], expected_output_scanned)
 
-    def test_scan_semgrep_fail(self):
+    # running scan() with faulty inputs to check exception is caught when semgrep fails
+    def test_failure_scan_semgrep(self):
         with self.assertRaises(Exception) as context:
             self.scanner_true.scan("rules/", ["tests/test-data/true-examples/1945.php"])
         self.assertTrue("Semgrep failed" in str(context.exception))
 
+    # running scan() with invalid json to check exception is caught when json cannot be decoded
     @patch("subprocess.run")
-    def test_scan_json_err(self, mock_subprocess_run):
+    def test_failure_scan_json(self, mock_subprocess_run):
         mock_result = MagicMock()
         mock_result.returncode = 0
         mock_result.stdout = "{invalid_json: true}"
@@ -45,7 +48,8 @@ class TestScanner(unittest.TestCase):
         with self.assertRaises(json.JSONDecodeError):
             scanner_err.scan("rules/", ["test-data/true-examples/1945.php", "test-data/true-examples/c100.php"])
 
-    def test_find_files(self):
+    # running find_files() to check for correct behavior
+    def test_successful_find_files(self):
         file_list = self.scanner_false.find_files()
 
         expected_file_list = [
@@ -59,19 +63,22 @@ class TestScanner(unittest.TestCase):
 
         self.assertEqual(file_list, expected_file_list)
 
-    def test_calculate_results_success(self):
+    # running calculate_results() to check for correct behavior
+    def test_successful_calculate_result(self):
         self.scanner_true.scan("rules/", ["test-data/true-examples/1945.php", "test-data/true-examples/c100.php"])
         self.scanner_true.compile_results()
         results = self.scanner_true.calculate_results()
         self.assertEqual(results, [1, 50])
 
-    def test_calculate_results_zero(self):
+    # running calculate_results() with 0 files scanned to check division by 0 is prevented
+    def test_edge_case_calculate_results_zero(self):
         scanner_zero = Scanner("test-data/true-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), True)
         scanner_zero.files_scanned = {}
         results_rate = scanner_zero.calculate_results()[1]
         self.assertEqual(results_rate, 0)
 
-    def test_list_files(self):
+    # running list_files() to check for correct behavior
+    def test_successful_list_files(self):
         self.scanner_true.run()
         list_files = self.scanner_true.list_files()
         expected_list_files = "False Negatives:", ["test-data/true-examples/c100.php"]
@@ -80,20 +87,23 @@ class TestScanner(unittest.TestCase):
 
 class TestCLI(unittest.TestCase):
 
-    def test_run_invalid_tags(self):
+    # running run() with invalid tags to check exception is caught when user inputs invalid tags
+    def test_failure_run_invalid_tags(self):
         cli_err = CLI("test-data/true-examples/", "test-data/false-examples/", ("rules/",), ("INVALID"), ("FP"))
         with self.assertRaises(Exception) as context:
             cli_err.run()
         self.assertTrue("Invalid tags" in str(context.exception))
 
-    def test_run_true(self):
+    # running run() with true-examples to check for correct behavior
+    def test_successful_run_true_examples(self):
         cli_true = CLI("test-data/true-examples/", "", ("rules/",), ("HIGH", "MEDIUM", "LOW"), None)
         cli_true.run()
         results = cli_true.results
         expected_results = {"true": [1, 50.0]}
         self.assertEqual(results, expected_results)
 
-    def test_run_false(self):
+    # running run() with false-examples to check for correct behavior
+    def test_successful_run_false_examples(self):
         cli_false = CLI("", "test-data/false-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), None)
         cli_false.run()
         results = cli_false.results
