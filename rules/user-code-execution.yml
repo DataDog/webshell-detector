@@ -11,10 +11,8 @@ rules:
       - pattern-either:
         - pattern: $_GET
         - pattern: $_POST
-        - pattern: $_COOKIE
         - pattern: $_REQUEST
         - pattern: $_SERVER
-        - pattern: $_FILES
     pattern-sinks:
       - pattern-either:
           - pattern: eval(...)
@@ -25,8 +23,6 @@ rules:
           - pattern: shell_exec(...)
           - pattern: pcntl_exec(...)
           - pattern: system(...)
-          - pattern: mysql_connect(...)
-          - pattern: mssql_connect(...)
           - pattern: pg_connect(...)
           - pattern: bzcompress(...)
           - pattern: gzcompress(...)
