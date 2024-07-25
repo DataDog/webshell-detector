@@ -1,5 +1,5 @@
 rules:
-  - id: perms
+  - id: perms-info
     languages:
       - php
     message: This file is extracting information on file permissions
@@ -22,9 +22,4 @@ rules:
           - pattern: ($PERMS & 0x4000) === $HEX
           - pattern: ($PERMS & 0x2000) === $HEX
           - pattern: ($PERMS & 0x1000) === $HEX
-          - pattern: chmod(..., 0777)
-          - pattern: chmod(..., 0775)
-          - pattern: chmod(..., 0700)
-          - pattern: mkdir(..., 0777)
-          - pattern: umask(0)
     severity: WARNING
