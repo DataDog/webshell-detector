@@ -12,8 +12,8 @@ sys.path.remove("..")
 class TestScanner(unittest.TestCase):
 
     def setUp(self):
-        self.scanner_true = Scanner("test-data/true-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), True)
-        self.scanner_false = Scanner("test-data/false-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), False)
+        self.scanner_true = Scanner("test-data/true-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), examples=True)
+        self.scanner_false = Scanner("test-data/false-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), examples=False)
 
     # running scan() to check for correct behavior
     def test_successful_scan_true(self):
@@ -43,7 +43,7 @@ class TestScanner(unittest.TestCase):
         mock_result.stdout = "{invalid_json: true}"
         mock_subprocess_run.return_value = mock_result
 
-        scanner_err = Scanner("test-data/true-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), True)
+        scanner_err = Scanner("test-data/true-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), examples=True)
 
         with self.assertRaises(json.JSONDecodeError):
             scanner_err.scan("rules/", ["test-data/true-examples/1945.php", "test-data/true-examples/c100.php"])
@@ -72,7 +72,7 @@ class TestScanner(unittest.TestCase):
 
     # running calculate_results() with 0 files scanned to check division by 0 is prevented
     def test_edge_case_calculate_results_zero(self):
-        scanner_zero = Scanner("test-data/true-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), True)
+        scanner_zero = Scanner("test-data/true-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), examples=True)
         scanner_zero.files_scanned = {}
         results_rate = scanner_zero.calculate_results()[1]
         self.assertEqual(results_rate, 0)

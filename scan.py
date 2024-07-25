@@ -16,7 +16,7 @@ FALSE_POSITIVE = "FP"
 
 
 class Scanner:
-    def __init__(self, target_dir: str, rules: Tuple[str, ...], tags: Tuple[str, ...], examples: bool) -> None:
+    def __init__(self, target_dir: str, rules: Tuple[str, ...], tags: Tuple[str, ...], *, examples: bool) -> None:
         self.target_dir = target_dir
         self.rules = rules
         self.tags = tags
