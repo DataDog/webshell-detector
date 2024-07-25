@@ -101,8 +101,8 @@ class CLI:
 
         # Run on default test set when neither true or false examples are inputted
         if not self.true_examples and not self.false_examples:
-            self.true_examples = "examples/true-examples/"
-            self.false_examples = "examples/false-examples/"
+            self.true_examples = "data/true-examples/"
+            self.false_examples = "data/false-examples/"
 
         self.rules = rules
         self.tags = tags
