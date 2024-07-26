@@ -1,15 +1,15 @@
-[submodule "tests/false examples/WordPress"]
+[submodule "data/false examples/WordPress"]
 	path = data/false-examples/WordPress
 	url = https://github.com/WordPress/WordPress.git
-[submodule "tests/false-examples/mediawiki"]
+[submodule "data/false-examples/mediawiki"]
 	path = data/false-examples/mediawiki
 	url = https://github.com/wikimedia/mediawiki.git
-[submodule "tests/false-examples/Laravel-5-Bootstrap-3-Starter-Site"]
+[submodule "data/false-examples/Laravel-5-Bootstrap-3-Starter-Site"]
 	path = data/false-examples/Laravel-5-Bootstrap-3-Starter-Site
 	url = https://github.com/mrakodol/Laravel-5-Bootstrap-3-Starter-Site.git
-[submodule "tests/false-examples/symfony"]
+[submodule "data/false-examples/symfony"]
 	path = data/false-examples/symfony
 	url = https://github.com/symfony/symfony.git
-[submodule "tests/true-examples/BlackArch"]
+[submodule "data/true-examples/BlackArch"]
 	path = data/true-examples/BlackArch
 	url = https://github.com/BlackArch/webshells.git
