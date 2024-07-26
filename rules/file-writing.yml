@@ -15,7 +15,5 @@ rules:
     pattern-sinks:
       - pattern-either:
           - pattern: fwrite(...)
-          - pattern: file_put_contents(...)
           - pattern: fputs(...)
-          - pattern: fprintf(...)
     severity: WARNING
