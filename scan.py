@@ -19,7 +19,7 @@ class Scanner:
     def __init__(self, target_dir: str, rules: Tuple[str, ...], tags: Tuple[str, ...], *, examples: bool) -> None:
         self.target_dir = target_dir
         self.rules = rules
-        self.tags = tags
+        self.severity = severity
         self.examples = examples
         self.total_output = {"results": [], "errors": [], "paths": {"scanned": []}}
         self.batch_size = 5000
@@ -61,9 +61,9 @@ class Scanner:
     def filter_results(self, results: List[Dict]) -> List[Dict]:
         filtered_results = []
         for result in results:
-            if "tags" in result.get("extra", {}).get("metadata", {}):
-                tags = result["extra"]["metadata"]["tags"]
-                if any(tag in tags for tag in self.tags):
+            if "severity" in result.get("extra", {}).get("metadata", {}):
+                severities = result["extra"]["metadata"]["severity"]
+                if any(severity in severities for severity in self.severity):
                     filtered_results.append(result)
         return filtered_results
 
@@ -95,7 +95,7 @@ class Scanner:
 
 
 class CLI:
-    def __init__(self, true_examples: str, false_examples: str, rules: Tuple[str, ...], tags: Tuple[str, ...], list_files: Tuple[str, ...]) -> None:
+    def __init__(self, true_examples: str, false_examples: str, rules: Tuple[str, ...], severity: Tuple[str, ...], list_files: Tuple[str, ...]) -> None:
         self.true_examples = true_examples
         self.false_examples = false_examples
 
@@ -105,22 +105,22 @@ class CLI:
             self.false_examples = "data/false-examples/"
 
         self.rules = rules
-        self.tags = tags
+        self.severity = severity
         self.list_files = list_files
         self.results = {}
 
     def run(self) -> None:
-        if not any(tag in ("HIGH", "MEDIUM", "LOW") for tag in self.tags):  # No valid tags, stop scanning
-            print("Invalid tags. Make sure you are scanning with LOW/MEDIUM/HIGH tags.")
+        if not any(severity in ("HIGH", "MEDIUM", "LOW") for severity in self.severity):  # No valid severitys, stop scanning
+            print("Invalid severitys. Make sure you are scanning with LOW/MEDIUM/HIGH severitie.")
             raise Exception("Invalid tags")
-        elif any(tag not in ("HIGH", "MEDIUM", "LOW") for tag in self.tags):  # Some valid and some invalid tags, continue scanning on valid tags
-            print("There are some invalid tags. Make sure you are scanning only with LOW/MEDIUM/HIGH tags. Scanning will continue with valid tags.")
+        elif any(severity not in ("HIGH", "MEDIUM", "LOW") for severity in self.severity):  # Some valid and some invalid severitys, continue scanning on valid severitys
+            print("There are some invalid severitys. Make sure you are scanning only with LOW/MEDIUM/HIGH severities. Scanning will continue with valid severitys.")
 
         if self.true_examples:
-            scanner_true = Scanner(self.true_examples, self.rules, self.tags, examples=True)
+            scanner_true = Scanner(self.true_examples, self.rules, self.severity, examples=True)
             self.results["true"] = scanner_true.run()
         if self.false_examples:
-            scanner_false = Scanner(self.false_examples, self.rules, self.tags, examples=False)
+            scanner_false = Scanner(self.false_examples, self.rules, self.severity, examples=False)
             self.results["false"] = scanner_false.run()
         output_table = self.generate_table(self.results)
         print(output_table)
@@ -151,10 +151,10 @@ class CLI:
 @click.option("--true-examples", type=click.Path(exists=True), help="path to true examples")
 @click.option("--false-examples", type=click.Path(exists=True), help="path to false examples")
 @click.option("--rule", multiple=True, type=click.Path(exists=True), default=("rules/",), help="path to rule")
-@click.option("--tag", multiple=True, default=("HIGH", "MEDIUM", "LOW"), help="tag options LOW/MEDIUM/HIGH")
+@click.option("--severity", multiple=True, default=["LOW", "MEDIUM", "HIGH"], help="severity options LOW/MEDIUM/HIGH")
 @click.option("--list-files", multiple=True, help="list file options FN/FP")
-def main(true_examples: str, false_examples: str, rule: Tuple[str, ...], tag: Tuple[str, ...], list_files: Tuple[str, ...]) -> None:
-    cli = CLI(true_examples, false_examples, rule, tag, list_files)
+def main(true_examples: str, false_examples: str, rule: Tuple[str, ...], severity: Tuple[str, ...], list_files: Tuple[str, ...]) -> None:
+    cli = CLI(true_examples, false_examples, rule, severity, list_files)
     cli.run()
 
 

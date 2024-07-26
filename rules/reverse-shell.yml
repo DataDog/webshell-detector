@@ -1,0 +1,29 @@
+rules:
+  - id: reverse-shell
+    languages:
+      - php
+    message: This file creating a reverse shell with fsockopen
+    metadata:
+      description: Identify when a reverse shell is forked with fsockopen
+      severity: HIGH
+    patterns:
+      - patterns:
+        - pattern-inside: |
+                $SOCK = fsockopen(...);
+                ...
+        - pattern-either:
+          - pattern-regex: \`.*\b(sh)\b.*?\`
+          - patterns:
+            - pattern-either:
+              - pattern: exec($CMD)
+              - pattern: shell_exec($CMD)
+              - pattern: pcntl_exec($CMD)
+              - pattern: system($CMD)
+              - pattern: passthru($CMD)
+              - pattern: assert($CMD)
+              - pattern: popen($CMD)
+              - pattern: proc_open($CMD)
+            - metavariable-regex:
+                    metavariable: $CMD
+                    regex: ('|")?.*\b(sh)\b.*('|")?
+    severity: WARNING
