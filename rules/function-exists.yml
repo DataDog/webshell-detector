@@ -1,0 +1,22 @@
+rules:
+  - id: function_exists
+    languages:
+      - php
+    message: This file is checking if dangerous functions exist
+    metadata:
+      description: Identify when a user is checking for dangerous functions
+      severity: MEDIUM
+    patterns:
+      - pattern-either:
+          - pattern: function_exists($FUNC)
+          - pattern: |
+              function $F1(...) {
+                ... function_exists(...); ...
+              }
+              ...
+              function $F2(...)
+              {if($F1($FUNC)){...}}
+      - metavariable-regex:
+          metavariable: $FUNC
+          regex: ('|"")?.*\b(eval|exec|assert|passthru|shellexec|shell_exec|system|ocilogon)\b.*('|"")?
+    severity: WARNING

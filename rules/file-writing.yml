@@ -1,0 +1,19 @@
+rules:
+  - id: file-writing
+    languages:
+      - php
+    message: This file is writing user input into a file which is a method to deliver web shells
+    metadata:
+      description: Identify when user input is written to a file which is a method to deliver web shells
+      severity: LOW
+    mode: taint
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_POST
+          - pattern: $_GET
+          - pattern: $_FILE
+    pattern-sinks:
+      - pattern-either:
+          - pattern: fwrite(...)
+          - pattern: fputs(...)
+    severity: WARNING

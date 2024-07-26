@@ -1,0 +1,46 @@
+rules:
+  - id: user-code-execution
+    languages:
+      - php
+    message: This file is using user input in potentially dangerous functions that execute code or perform system operations.
+    metadata:
+      description: Identify when user input is used in potentially dangerous functions
+      severity: HIGH
+    mode: taint
+    pattern-sources:
+      - pattern-either:
+        - pattern: $_GET
+        - pattern: $_POST
+        - pattern: $_REQUEST
+        - pattern: $_SERVER
+    pattern-sinks:
+      - pattern-either:
+          - pattern: eval(...)
+          - pattern: exec(...)
+          - pattern: assert(...)
+          - pattern: passthru(...)
+          - pattern: shellexec(...)
+          - pattern: shell_exec(...)
+          - pattern: pcntl_exec(...)
+          - pattern: system(...)
+          - pattern: pg_connect(...)
+          - pattern: bzcompress(...)
+          - pattern: gzcompress(...)
+          - pattern: gzencode(...)
+          - pattern: posix_getuid(...)
+          - pattern: posix_uname(...)
+          - pattern: ocilogon(...)
+          - pattern: proc_open(...)
+          - pattern: chmod(...)
+          - pattern: mkdir(...)
+          - pattern: chown(...)
+          - pattern: chgrp(...)
+          - pattern: strtr(...)
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: escapeshellarg(...)
+          - pattern: escapeshellcmd(...)
+          - pattern: htmlspecialchars(...)
+          - pattern: htmlentities(...)
+          - pattern: escape(...)
+    severity: WARNING

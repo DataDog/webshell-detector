@@ -1,0 +1,24 @@
+rules:
+  - id: exec-use
+    languages:
+      - php
+    message: This file is running dangerous executive commands
+    metadata:
+      description: Identify when dangerous executive commands are run
+      severity: HIGH
+    patterns:
+      - pattern-either:
+        - patterns:
+          - pattern-either:
+              - pattern: exec($CMD)
+              - pattern: shell_exec($CMD)
+              - pattern: pcntl_exec($CMD)
+              - pattern: system($CMD)
+              - pattern: passthru($CMD)
+              - pattern: assert($CMD)
+              - pattern: popen($CMD)
+              - pattern: proc_open($CMD)
+          - metavariable-regex:
+              metavariable: $CMD
+              regex: .*('|")?.*\b(pwd|id|whoami|cd|ls|cmd|cmnd|cfe|uname|rm|cat|mv|netstat|ps|ifconfig|wget|curl)\b.*('|")?.* # commonly found bash commands in web shells
+    severity: WARNING

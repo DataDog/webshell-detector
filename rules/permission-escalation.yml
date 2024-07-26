@@ -1,0 +1,16 @@
+rules:
+  - id: permission-escalation
+    languages:
+      - php
+    message: This file is escalating permissions
+    metadata:
+      description: Identify when attackers are escalating permissions
+      severity: LOW
+    patterns:
+      - pattern-either:
+          - pattern: chmod(..., 0777)
+          - pattern: chmod(..., 0775)
+          - pattern: chmod(..., 0700)
+          - pattern: mkdir(..., 0777)
+          - pattern: umask(0)
+    severity: WARNING
