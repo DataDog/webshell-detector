@@ -16,7 +16,7 @@ FALSE_POSITIVE = "FP"
 
 
 class Scanner:
-    def __init__(self, target_dir: str, rules: Tuple[str, ...], severity: Tuple[str, ...], examples: bool) -> None:
+    def __init__(self, target_dir: str, rules: Tuple[str, ...], severity: Tuple[str, ...], *, examples: bool) -> None:
         self.target_dir = target_dir
         self.rules = rules
         self.severity = severity
@@ -44,13 +44,14 @@ class Scanner:
         result = subprocess.run(command, capture_output=True, text=True, shell=True)
 
         if result.returncode != 0:
-            print(f"Semgrep failed with return code {result.returncode} with command semgrep scan --config {rule} --json {self.target_dir}\n{result.stderr}")
+            print(f"Semgrep failed with return code {result.returncode} with command {command}\n{result.stderr}")
+            raise Exception("Semgrep failed")
 
         try:
             output = json.loads(result.stdout)
         except json.JSONDecodeError as e:
             print(f"Failed to parse JSON output: {e}")
-            sys.exit(1)
+            raise
 
         filtered_results = self.filter_results(output.get("results", []))
         self.total_output["results"].extend(filtered_results)
@@ -100,8 +101,8 @@ class CLI:
 
         # Run on default test set when neither true or false examples are inputted
         if not self.true_examples and not self.false_examples:
-            self.true_examples = "tests/true-examples/"
-            self.false_examples = "tests/false-examples/"
+            self.true_examples = "data/true-examples/"
+            self.false_examples = "data/false-examples/"
 
         self.rules = rules
         self.severity = severity
@@ -110,10 +111,10 @@ class CLI:
 
     def run(self) -> None:
         if not any(severity in ("HIGH", "MEDIUM", "LOW") for severity in self.severity):  # No valid severitys, stop scanning
-            print("Invalid severitys. Make sure you are scanning with LOW/MEDIUM/HIGH severitie.")
-            sys.exit(1)
+            print("Invalid severities. Make sure you are scanning with LOW/MEDIUM/HIGH severity.")
+            raise Exception("Invalid tags")
         elif any(severity not in ("HIGH", "MEDIUM", "LOW") for severity in self.severity):  # Some valid and some invalid severitys, continue scanning on valid severitys
-            print("There are some invalid severitys. Make sure you are scanning only with LOW/MEDIUM/HIGH severities. Scanning will continue with valid severitys.")
+            print("There are some invalid severities. Make sure you are scanning only with LOW/MEDIUM/HIGH severity. Scanning will continue with valid severities.")
 
         if self.true_examples:
             scanner_true = Scanner(self.true_examples, self.rules, self.severity, examples=True)
