@@ -111,10 +111,10 @@ class CLI:
 
     def run(self) -> None:
         if not any(severity in ("HIGH", "MEDIUM", "LOW") for severity in self.severity):  # No valid severitys, stop scanning
-            print("Invalid severitys. Make sure you are scanning with LOW/MEDIUM/HIGH severitie.")
+            print("Invalid severities. Make sure you are scanning with LOW/MEDIUM/HIGH severity.")
             raise Exception("Invalid tags")
         elif any(severity not in ("HIGH", "MEDIUM", "LOW") for severity in self.severity):  # Some valid and some invalid severitys, continue scanning on valid severitys
-            print("There are some invalid severitys. Make sure you are scanning only with LOW/MEDIUM/HIGH severities. Scanning will continue with valid severitys.")
+            print("There are some invalid severities. Make sure you are scanning only with LOW/MEDIUM/HIGH severity. Scanning will continue with valid severities.")
 
         if self.true_examples:
             scanner_true = Scanner(self.true_examples, self.rules, self.severity, examples=True)
