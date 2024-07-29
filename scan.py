@@ -51,7 +51,7 @@ class Scanner:
             output = json.loads(result.stdout)
         except json.JSONDecodeError as e:
             print(f"Failed to parse JSON output: {e}")
-            raise e
+            raise
 
         filtered_results = self.filter_results(output.get("results", []))
         self.total_output["results"].extend(filtered_results)
