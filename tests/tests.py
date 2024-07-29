@@ -15,7 +15,7 @@ class TestScanner(unittest.TestCase):
         self.scanner_true = Scanner("test-data/true-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), examples=True)
         self.scanner_false = Scanner("test-data/false-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), examples=False)
 
-    # running scan() to check for correct behavior
+    # running scan() with valid input to check for successful result
     def test_successful_scan_true(self):
         self.scanner_true.scan("rules/", ["test-data/true-examples/1945.php", "test-data/true-examples/c100.php"])
 
@@ -48,7 +48,7 @@ class TestScanner(unittest.TestCase):
         with self.assertRaises(json.JSONDecodeError):
             scanner_err.scan("rules/", ["test-data/true-examples/1945.php", "test-data/true-examples/c100.php"])
 
-    # running find_files() to check for correct behavior
+    # running find_files() ith valid input to check for successful result
     def test_successful_find_files(self):
         file_list = self.scanner_false.find_files()
 
@@ -63,7 +63,7 @@ class TestScanner(unittest.TestCase):
 
         self.assertEqual(file_list, expected_file_list)
 
-    # running calculate_results() to check for correct behavior
+    # running calculate_results() with valid input to check for successful result
     def test_successful_calculate_result(self):
         self.scanner_true.files_detected = {"test-data/true-examples/1945.php"}
         self.scanner_true.files_scanned = {"test-data/true-examples/1945.php", "test-data/true-examples/c100.php"}
@@ -77,7 +77,7 @@ class TestScanner(unittest.TestCase):
         results_rate = scanner_zero.calculate_results()[1]
         self.assertEqual(results_rate, 0)
 
-    # running list_files() to check for correct behavior
+    # running list_files() with valid input to check for successful result
     def test_successful_list_files(self):
         self.scanner_true.files_detected = {"test-data/true-examples/1945.php"}
         self.scanner_true.files_scanned = {"test-data/true-examples/1945.php", "test-data/true-examples/c100.php"}
@@ -95,7 +95,7 @@ class TestCLI(unittest.TestCase):
             cli_err.run()
         self.assertTrue("Invalid tags" in str(context.exception))
 
-    # running run() with true-examples to check for correct behavior
+    # running run() with true-examples to check for successful result
     def test_successful_run_true_examples(self):
         cli_true = CLI("test-data/true-examples/", "", ("rules/",), ("HIGH", "MEDIUM", "LOW"), None)
         cli_true.run()
@@ -103,7 +103,7 @@ class TestCLI(unittest.TestCase):
         expected_results = {"true": [1, 50.0]}
         self.assertEqual(results, expected_results)
 
-    # running run() with false-examples to check for correct behavior
+    # running run() with false-examples to check for successful result
     def test_successful_run_false_examples(self):
         cli_false = CLI("", "test-data/false-examples/", ("rules/",), ("HIGH", "MEDIUM", "LOW"), None)
         cli_false.run()
