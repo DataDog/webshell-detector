@@ -1,9 +1,10 @@
 Component,Origin,License,Copyright
-docker,PyPI,Apache-2.0,docker
-semgrep,PyPI,LGPL-2.1,r2c
-requests,PyPI,Apache-2.0,Kenneth Reitz
-tqdm,PyPI,MPL-2.0,Casper da Costa-Luis
-black,PyPI,MIT,Łukasz Langa
-dateutil,PyPI,Apache-2.0,Gustavo Niemeyer
-python-whois,PyPI,MIT,Richard Penman
-pathos,PyPI,BSD-3-Clause,Mike McKerns
+click,PyPI,BSD,Pallets
+shlex,PyPI,LGPL-2.1,Python Software Foundation
+glob,PyPI,LGPL-2.1,Python Software Foundation
+os,PyPI,LGPL-2.1,Python Software Foundation
+json,PyPI,LGPL-2.1,Python Software Foundation
+typing,PyPI,LGPL-2.1,Python Software Foundation
+itertools,PyPI,LGPL-2.1,Python Software Foundation
+prettytable,PyPI,BSD,Luke Maurits
+unittest,PyPI,LGPL-2.1,Python Software Foundation
