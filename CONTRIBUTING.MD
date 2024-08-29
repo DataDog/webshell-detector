@@ -7,10 +7,10 @@
 ### Semgrep rules
 There are currently 9 Semgrep web shell detection rules. 
 They were developed from analyzing these repositories:
-- BlackArch Web Shells
-- Xl7dec Web Shells
-- YARA Web Shell Detection Rules
-- Semgrep Security Rules
+- [BlackArch Web Shells](https://github.com/BlackArch/webshells/tree/master/php)
+- [Xl7dec Web Shells](https://github.com/xl7dev/WebShell/tree/master/Php)
+- [YARA Web Shell Detection Rules](https://github.com/jvoisin/php-malware-finder/blob/master/data/php.yar)
+- [Semgrep Security Rules](https://github.com/semgrep/semgrep-rules/tree/develop/php/lang/security)
 
 #### Next steps for semgrep rules (Aug 2024)
 - Adding testing
