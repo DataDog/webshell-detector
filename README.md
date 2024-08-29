@@ -1,4 +1,8 @@
 # webshell-detector
+
+> [!WARNING]
+> Do not run any code in code/true-examples-malicious/
+
 webshell-detector is a repository that stores static analysis rules for detecting web shells and a test corpus of web shell code. This project utilizes [Semgrep rule writing](https://semgrep.dev/docs/writing-rules/overview) for static analysis and provides a script to scan and analyze the results.
 ## File Structure
 ```
@@ -14,8 +18,6 @@ webshell-detector is a repository that stores static analysis rules for detectin
 ### Running the Script  
 The scanning script scan.py allows you to test the Semgrep rules against different parts of the test corpus and with different sets of rules.
 
-> [!WARNING]
-> Do not run any code in code/true-examples-malicious/
 
 #### Sample usage:
 ```
